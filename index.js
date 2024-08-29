@@ -207,6 +207,21 @@ class Booking
 
     fee()
     {
+        if(!this.discount)
+        {
+            return 'Invalid booking discount data';
+        }
+
+        if(!this.room)
+        {
+            return 'Invalid room data';
+        }
+
+        if(!this.room.discount)
+        {
+            return 'Invalid room discount data';
+        }
+
         const roomFee = (this.room.rate - (this.room.rate * (this.room.discount/100)));
         return (roomFee - (roomFee * (this.discount/100)));
     }

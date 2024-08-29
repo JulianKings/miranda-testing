@@ -12,6 +12,12 @@ const mockRoom2 = {
     discount: 50
 }
 
+const mockNullRoom = {
+    name: 'Mock Room 2',
+    rate: 250,
+    discount: null
+}
+
 const mockBooking = {
     name: 'Mock Booking',
     email: 'booking@fake.com',
@@ -45,7 +51,7 @@ describe('Room tests', () => {
         expect(new Room('potato', [], true, false).result).toBe('Invalid data');
     });
 
-    test('check for valid data', () => {
+    test('check if room data is stored properly', () => {
         const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
         const booking2 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
         const booking3 = new Booking(mockBooking3.name, mockBooking3.email, mockBooking3.checkin, mockBooking3.checkout, mockBooking3.discount, mockRoom);
@@ -56,7 +62,7 @@ describe('Room tests', () => {
         expect(room.bookings).toHaveLength(3);
     });
 
-    test('check for is occupied function', () => {
+    test('check for invalid values on isOccupied function', () => {
         const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
         const booking2 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
         const booking3 = new Booking(mockBooking3.name, mockBooking3.email, mockBooking3.checkin, mockBooking3.checkout, mockBooking3.discount, mockRoom);
@@ -67,16 +73,23 @@ describe('Room tests', () => {
         expect(room.isOccupied(new Date('potato'))).toBe('Invalid data');
     });
 
-    test('check if is occupied function actually works', () => {
+    test('check for an occupied room', () => {
         const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
         const booking2 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
         const booking3 = new Booking(mockBooking3.name, mockBooking3.email, mockBooking3.checkin, mockBooking3.checkout, mockBooking3.discount, mockRoom);
         const room = new Room(mockRoom.name, [booking, booking2, booking3], mockRoom.rate, mockRoom.discount);
         expect(room.isOccupied(new Date('08/26/2024'))).toBe(true);
+    });
+
+    test('check for an unoccupied room', () => {
+        const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
+        const booking2 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
+        const booking3 = new Booking(mockBooking3.name, mockBooking3.email, mockBooking3.checkin, mockBooking3.checkout, mockBooking3.discount, mockRoom);
+        const room = new Room(mockRoom.name, [booking, booking2, booking3], mockRoom.rate, mockRoom.discount);
         expect(room.isOccupied(new Date('08/26/2025'))).toBe(false);
     });
 
-    test('check for occupancy percentage function', () => {
+    test('check for invalid data in occupancyPercentage', () => {
         const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
         const booking2 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
         const booking3 = new Booking(mockBooking3.name, mockBooking3.email, mockBooking3.checkin, mockBooking3.checkout, mockBooking3.discount, mockRoom);
@@ -85,12 +98,13 @@ describe('Room tests', () => {
         expect(room.occupancyPercentage('hello')).toBe('Invalid data');
         expect(room.occupancyPercentage('hello', 'barbie')).toBe('Invalid data');
         expect(room.occupancyPercentage(true, false)).toBe('Invalid data');
+        expect(room.occupancyPercentage(null)).toBe('Invalid data');
         expect(room.occupancyPercentage([])).toBe('Invalid data');
         expect(room.occupancyPercentage(new Date('potato'))).toBe('Invalid data');
         expect(room.occupancyPercentage(new Date('potato'), new Date('tomato'))).toBe('Invalid data');
     });
 
-    test('check if occupancy percentage function actually works', () => {
+    test('check for a 100 percent result in the occupancyPercentage function', () => {
         const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
         const booking2 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
         const booking3 = new Booking(mockBooking3.name, mockBooking3.email, mockBooking3.checkin, mockBooking3.checkout, mockBooking3.discount, mockRoom);
@@ -100,7 +114,23 @@ describe('Room tests', () => {
         expect(room.occupancyPercentage(new Date('08/26/2030'), new Date('08/28/2030'))).toBe(0);
     });
 
-    test('check for static occupancy percentage function', () => {
+    test('check for a 33,33 percent result in the occupancyPercentage function', () => {
+        const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
+        const booking2 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
+        const booking3 = new Booking(mockBooking3.name, mockBooking3.email, mockBooking3.checkin, mockBooking3.checkout, mockBooking3.discount, mockRoom);
+        const room = new Room(mockRoom.name, [booking, booking2, booking3], mockRoom.rate, mockRoom.discount);
+        expect(room.occupancyPercentage(new Date('08/25/2024'), new Date('08/26/2024'))).toBe((1/3)*100);
+    });
+
+    test('check for a 0 percent result in the occupancyPercentage function', () => {
+        const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
+        const booking2 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
+        const booking3 = new Booking(mockBooking3.name, mockBooking3.email, mockBooking3.checkin, mockBooking3.checkout, mockBooking3.discount, mockRoom);
+        const room = new Room(mockRoom.name, [booking, booking2, booking3], mockRoom.rate, mockRoom.discount);
+        expect(room.occupancyPercentage(new Date('08/26/2030'), new Date('08/28/2030'))).toBe(0);
+    });
+
+    test('check for invalid data in the static function totalOccupancyPercentage', () => {
         const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
         const booking2 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
         const booking3 = new Booking(mockBooking3.name, mockBooking3.email, mockBooking3.checkin, mockBooking3.checkout, mockBooking3.discount, mockRoom);
@@ -118,7 +148,7 @@ describe('Room tests', () => {
         expect(Room.totalOccupancyPercentage([], new Date('potato'), new Date('tomato'))).toBe('Invalid data');
     });
 
-    test('check if static occupancy percentage function actually works', () => {
+    test('check for a full percentage result on the static occupancy percentage function', () => {
         const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
         const booking2 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
         const booking3 = new Booking(mockBooking3.name, mockBooking3.email, mockBooking3.checkin, mockBooking3.checkout, mockBooking3.discount, mockRoom);
@@ -128,10 +158,21 @@ describe('Room tests', () => {
         const room2 = new Room(mockRoom2.name, [booking4, booking5], mockRoom2.rate, mockRoom2.discount);
         const roomList = [room, room2];
         expect(Room.totalOccupancyPercentage(roomList, new Date('08/26/2024'), new Date('08/28/2024'))).toBe(100);
+    });
+
+    test('check for a zero percentage result on the static occupancy percentage function', () => {
+        const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
+        const booking2 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
+        const booking3 = new Booking(mockBooking3.name, mockBooking3.email, mockBooking3.checkin, mockBooking3.checkout, mockBooking3.discount, mockRoom);
+        const room = new Room(mockRoom.name, [booking, booking2, booking3], mockRoom.rate, mockRoom.discount);
+        const booking4 = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
+        const booking5 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
+        const room2 = new Room(mockRoom2.name, [booking4, booking5], mockRoom2.rate, mockRoom2.discount);
+        const roomList = [room, room2];
         expect(Room.totalOccupancyPercentage(roomList, new Date('08/26/2030'), new Date('08/28/2030'))).toBe(0);
     });
 
-    test('check for static available rooms function', () => {
+    test('check for invalid values on the static availableRooms function', () => {
         const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
         const booking2 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
         const booking3 = new Booking(mockBooking3.name, mockBooking3.email, mockBooking3.checkin, mockBooking3.checkout, mockBooking3.discount, mockRoom);
@@ -149,7 +190,7 @@ describe('Room tests', () => {
         expect(Room.availableRooms([], new Date('potato'), new Date('tomato'))).toBe('Invalid data');
     });
 
-    test('check if static occupancy percentage function actually works', () => {
+    test('check for an empty result for the static availableRooms function', () => {
         const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
         const booking2 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
         const booking3 = new Booking(mockBooking3.name, mockBooking3.email, mockBooking3.checkin, mockBooking3.checkout, mockBooking3.discount, mockRoom);
@@ -159,6 +200,18 @@ describe('Room tests', () => {
         const room2 = new Room(mockRoom2.name, [booking4, booking5], mockRoom2.rate, mockRoom2.discount);
         const roomList = [room, room2];
         expect(Room.availableRooms(roomList, new Date('08/26/2024'), new Date('08/28/2024'))).toHaveLength(0);
+        expect(Room.availableRooms(roomList, new Date('08/26/2030'), new Date('08/28/2030'))).toHaveLength(2);
+    });
+
+    test('check for a complete result for the static availableRooms function', () => {
+        const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
+        const booking2 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
+        const booking3 = new Booking(mockBooking3.name, mockBooking3.email, mockBooking3.checkin, mockBooking3.checkout, mockBooking3.discount, mockRoom);
+        const room = new Room(mockRoom.name, [booking, booking2, booking3], mockRoom.rate, mockRoom.discount);
+        const booking4 = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
+        const booking5 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
+        const room2 = new Room(mockRoom2.name, [booking4, booking5], mockRoom2.rate, mockRoom2.discount);
+        const roomList = [room, room2];
         expect(Room.availableRooms(roomList, new Date('08/26/2030'), new Date('08/28/2030'))).toHaveLength(2);
     });
 });
@@ -182,10 +235,22 @@ describe('Booking tests', () => {
         expect(booking.room).toBe(mockRoom);
     });
 
-    test('check for fee function', () => {
+    test('check for valid fee function values', () => {
         const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockRoom);
         const booking2 = new Booking(mockBooking2.name, mockBooking2.email, mockBooking2.checkin, mockBooking2.checkout, mockBooking2.discount, mockRoom);
         expect(booking.fee()).toBe(162);
         expect(booking2.fee()).toBe(126);
+    });
+
+    test('check for fee function with null room', () => {
+        const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, null);
+        expect(booking.fee()).toBe('Invalid room data');
+    });
+
+    test('check for fee function with null discount', () => {
+        const booking = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, mockBooking.discount, mockNullRoom);
+        const booking2 = new Booking(mockBooking.name, mockBooking.email, mockBooking.checkin, mockBooking.checkout, null, mockRoom);
+        expect(booking.fee()).toBe('Invalid room discount data');
+        expect(booking2.fee()).toBe('Invalid booking discount data');
     });
 });
